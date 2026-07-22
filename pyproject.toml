@@ -1,0 +1,18 @@
+[project]
+name = "sqa-14"
+version = "0.1.0"
+description = "Add your description here"
+readme = "README.md"
+requires-python = ">=3.12"
+dependencies = [
+    "fastapi[standard]>=0.139.2",
+    "passlib>=1.7.4",
+    "pymysql>=1.2.0",
+]
+
+[dependency-groups]
+dev = [
+    "httpx>=0.28.1",
+    "pytest>=9.1.1",
+    "pytest-cov>=7.1.0",
+]
