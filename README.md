@@ -62,22 +62,38 @@ docker compose version
 
    ```bash
    git clone https://github.com/unikom-codelabs/challenge-sqa-14.git
-   cd SQA-15
+   cd challenge-sqa-14
    ```
 
 2. **Pastikan versi Python sesuai**
 
    Project ini menggunakan file `.python-version` (Python 3.12). Jika menggunakan `uv`, versi Python yang sesuai akan otomatis diunduh/dipakai saat sinkronisasi dependensi.
 
-3. **Sinkronisasi dependensi project**
+3. **Buat dan aktifkan virtual environment**
 
-   Perintah ini akan membuat virtual environment (`.venv`) dan menginstal seluruh dependensi (termasuk dependensi development seperti `pytest`) berdasarkan `pyproject.toml` dan `uv.lock`.
+   ```bash
+   uv venv
+   ```
+
+   Aktifkan virtual environment yang baru dibuat:
+
+   ```bash
+   # macOS / Linux
+   source .venv/bin/activate
+
+   # Windows (PowerShell)
+   .venv\Scripts\activate
+   ```
+
+4. **Sinkronisasi dependensi project**
+
+   Perintah ini akan menginstal seluruh dependensi (termasuk dependensi development seperti `pytest`) berdasarkan `pyproject.toml` dan `uv.lock` ke dalam virtual environment yang sudah dibuat.
 
    ```bash
    uv sync --dev
    ```
 
-4. **(Opsional) Jalankan database MySQL lokal**
+5. **(Opsional) Jalankan database MySQL lokal**
 
    Dibutuhkan jika sedang mengerjakan/menguji fitur dari Issue #3 (Integrasi MySQL) dan seterusnya.
 
@@ -95,7 +111,7 @@ docker compose version
    - **Username**: `root`
    - **Password**: `root`
 
-5. **Jalankan pengujian untuk memastikan setup berhasil**
+6. **Jalankan pengujian untuk memastikan setup berhasil**
 
    ```bash
    uv run pytest test_main.py -v --cov=main
@@ -103,7 +119,7 @@ docker compose version
 
    Jika seluruh test **PASSED**, setup project sudah berhasil dan siap untuk dikembangkan.
 
-6. **(Opsional) Jalankan server FastAPI**
+7. **(Opsional) Jalankan server FastAPI**
 
    Dibutuhkan jika sedang mengerjakan/menguji fitur dari Issue #4 (RESTful API) dan seterusnya.
 
@@ -117,7 +133,7 @@ docker compose version
    http://localhost:8000/docs
    ```
 
-7. **Mulai mengembangkan fitur**
+8. **Mulai mengembangkan fitur**
 
    Ikuti alur kerja standar project ini: **issue -> branch -> implementasi -> commit -> pull request -> ci -> merge**. Lihat detail masing-masing fitur di folder [`issues/`](./issues).
 
