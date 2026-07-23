@@ -1,6 +1,11 @@
 import pytest
 
-from main import is_email_valid, is_password_valid
+from main import (
+    hash_password,
+    is_email_valid,
+    is_password_valid,
+    verify_password,
+)
 
 
 @pytest.mark.parametrize(
@@ -67,4 +72,20 @@ def test_email_rules(email, expected, deskripsi_sqa):
     result = is_email_valid(email)
 
     assert result == expected, f"Gagal pada skenario: {deskripsi_sqa}"
+
+
+def test_password_hashing():
+    raw_password = "PasswordRahasia123"
+    hashed = hash_password(raw_password)
+
+    assert (
+        hashed != raw_password
+    ), "Hasil hash_password tidak boleh sama dengan kata sandi asli"
+    assert verify_password(
+        raw_password, hashed
+    ), "verify_password harus bernilai True untuk kata sandi yang benar"
+    assert not verify_password(
+        "PasswordSalah123", hashed
+    ), "verify_password harus bernilai False untuk kata sandi yang salah"
+
 
