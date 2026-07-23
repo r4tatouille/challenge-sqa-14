@@ -7,8 +7,10 @@ requires-python = ">=3.12"
 dependencies = [
     "bcrypt>=5.0.0",
     "fastapi[standard]>=0.139.2",
+    "httpx>=0.28.1",
     "passlib>=1.7.4",
     "pymysql>=1.2.0",
+    "uvicorn>=0.51.0",
 ]
 
 [dependency-groups]

@@ -2,6 +2,10 @@ import os
 import re
 import bcrypt
 import pymysql
+from fastapi import FastAPI, HTTPException, status
+from pydantic import BaseModel, field_validator
+
+app = FastAPI(title="User Registration API")
 
 
 def is_password_valid(password: str) -> bool:
@@ -79,6 +83,41 @@ def simpan_user_ke_db(email: str, hashed_password: str) -> bool:
     except Exception as e:
         print(f"Error Database: {e}")
         return False
+
+
+class UserRegisterRequest(BaseModel):
+    email: str
+    password: str
+
+    @field_validator("email")
+    @classmethod
+    def validate_email_format(cls, v: str) -> str:
+        if not is_email_valid(v):
+            raise ValueError("Format alamat email tidak valid.")
+        return v
+
+    @field_validator("password")
+    @classmethod
+    def validate_password_format(cls, v: str) -> str:
+        if not is_password_valid(v):
+            raise ValueError("Format kata sandi tidak memenuhi kriteria keamanan.")
+        return v
+
+
+@app.post("/register", status_code=status.HTTP_201_CREATED)
+def register_user(user_data: UserRegisterRequest):
+    hashed_pass = hash_password(user_data.password)
+    success = simpan_user_ke_db(user_data.email, hashed_pass)
+    if not success:
+        raise HTTPException(
+            status_code=status.HTTP_500_INTERNAL_SERVER_ERROR,
+            detail="Gagal menyimpan user ke database.",
+        )
+    return {
+        "message": "User berhasil terdaftar",
+        "email": user_data.email,
+    }
+
 
 
 
