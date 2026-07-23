@@ -1,14 +1,18 @@
 import os
 import pytest
 import pymysql
+from fastapi.testclient import TestClient
 
 from main import (
+    app,
     hash_password,
     is_email_valid,
     is_password_valid,
     simpan_user_ke_db,
     verify_password,
 )
+
+client = TestClient(app)
 
 
 @pytest.mark.parametrize(
@@ -159,4 +163,32 @@ def test_simpan_user_ke_db_integration(db_connection):
     ), f"Hashed password tidak cocok. Expected: {hashed_pass}, Got: {row[1]}"
 
 
+def test_register_api_positive(db_connection):
+    payload = {
+        "email": "mahasiswa@kampus.ac.id",
+        "password": "ValidPass123",
+    }
+    response = client.post("/register", json=payload)
+    assert response.status_code == 201
+    data = response.json()
+    assert data["message"] == "User berhasil terdaftar"
+    assert data["email"] == "mahasiswa@kampus.ac.id"
 
+    # Verifikasi data tersimpan di database
+    with db_connection.cursor() as cursor:
+        cursor.execute(
+            "SELECT email FROM users WHERE email = %s", ("mahasiswa@kampus.ac.id",)
+        )
+        row = cursor.fetchone()
+
+    assert row is not None, "User yang terdaftar melalui API tidak ditemukan di database"
+    assert row[0] == "mahasiswa@kampus.ac.id"
+
+
+def test_register_api_negative_invalid_email():
+    payload = {
+        "email": "usertanpadomain",
+        "password": "ValidPass123",
+    }
+    response = client.post("/register", json=payload)
+    assert response.status_code == 422
