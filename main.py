@@ -1,5 +1,7 @@
+import os
 import re
 import bcrypt
+import pymysql
 
 
 def is_password_valid(password: str) -> bool:
@@ -47,6 +49,37 @@ def verify_password(plain_password: str, hashed_password: str) -> bool:
     return bcrypt.checkpw(
         plain_password.encode("utf-8"), hashed_password.encode("utf-8")
     )
+
+
+def simpan_user_ke_db(email: str, hashed_password: str) -> bool:
+    """
+    Menyimpan data akun user (email dan hashed_password) ke dalam basis data MySQL.
+    Menggunakan Environment Variables untuk konfigurasi koneksi DB.
+    """
+    host = os.getenv("DB_HOST", "127.0.0.1")
+    port = int(os.getenv("DB_PORT", "3306"))
+    user = os.getenv("DB_USER", "root")
+    password = os.getenv("DB_PASSWORD", "root")
+    database = os.getenv("DB_NAME", "test_db")
+
+    try:
+        connection = pymysql.connect(
+            host=host,
+            port=port,
+            user=user,
+            password=password,
+            database=database,
+            autocommit=True,
+        )
+        with connection.cursor() as cursor:
+            query = "INSERT INTO users (email, hashed_password) VALUES (%s, %s)"
+            cursor.execute(query, (email, hashed_password))
+        connection.close()
+        return True
+    except Exception as e:
+        print(f"Error Database: {e}")
+        return False
+
 
 
 
